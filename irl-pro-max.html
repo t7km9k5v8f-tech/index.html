@@ -1,1 +1,129 @@
-irl-pro-max.html
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>IRL Pro Max Overlay</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: white;
+    overflow: hidden;
+}
+
+/* MAIN LAYOUT */
+.wrapper {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* LEFT HUD */
+.hud {
+    width: 22%;
+    padding: 15px;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    font-size: 24px;
+}
+
+/* BOX STYLE */
+.box {
+    background: rgba(255,255,255,0.08);
+    padding: 12px;
+    border-radius: 12px;
+    backdrop-filter: blur(6px);
+}
+
+.small {
+    font-size: 16px;
+    opacity: 0.85;
+}
+
+/* CHAT */
+.chat {
+    width: 78%;
+    height: 100vh;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <!-- HUD LEFT -->
+    <div class="hud">
+
+        <div class="box">
+            🕒 Uhrzeit<br>
+            <span id="time" class="small">--:--:--</span>
+        </div>
+
+        <div class="box">
+            🚗 Geschwindigkeit<br>
+            <span id="speed" class="small">0 km/h</span>
+        </div>
+
+        <div class="box">
+            📡 Status<br>
+            <span class="small">IRL LIVE</span>
+        </div>
+
+    </div>
+
+    <!-- TWITCH CHAT -->
+    <div class="chat">
+        <iframe
+            src="https://www.twitch.tv/embed/DEIN_CHANNEL/chat?parent=localhost"
+        ></iframe>
+    </div>
+
+</div>
+
+<script>
+
+// ================= TIME =================
+function updateTime() {
+    const now = new Date();
+    document.getElementById("time").innerText =
+        now.toLocaleTimeString("de-DE");
+}
+setInterval(updateTime, 1000);
+updateTime();
+
+
+// ================= SPEED (GPS) =================
+if (navigator.geolocation) {
+    navigator.geolocation.watchPosition(
+        (pos) => {
+            let speed = pos.coords.speed;
+
+            if (speed !== null && speed >= 0) {
+                speed = speed * 3.6; // m/s → km/h
+                document.getElementById("speed").innerText =
+                    speed.toFixed(1) + " km/h";
+            } else {
+                document.getElementById("speed").innerText = "0 km/h";
+            }
+        },
+        () => {
+            document.getElementById("speed").innerText = "GPS aus";
+        },
+        { enableHighAccuracy: true }
+    );
+}
+
+</script>
+
+</body>
+</html>
